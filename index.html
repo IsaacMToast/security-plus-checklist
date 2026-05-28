@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Security+ Study Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Professor Messer SY0-701</p>
+        <h1>Security+ Study Tracker</h1>
+      </div>
+      <a class="playlist-link" href="https://www.youtube.com/watch?v=KiEptGbnEBc&list=PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv" target="_blank" rel="noreferrer">Open playlist</a>
+    </header>
+
+    <main>
+      <section class="summary" aria-label="Progress summary">
+        <div class="progress-ring" aria-hidden="true">
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="summary-copy">
+          <h2 id="progressTitle">0 of 121 complete</h2>
+          <p id="progressDetail">Check off videos as you finish them. Notes save automatically in this browser.</p>
+          <div class="bar" aria-hidden="true"><span id="progressBar"></span></div>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Tracker controls">
+        <label class="search">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Title, section, or duration">
+        </label>
+
+        <div class="segmented" role="group" aria-label="Filter videos">
+          <button class="active" data-filter="all" type="button">All</button>
+          <button data-filter="todo" type="button">To do</button>
+          <button data-filter="done" type="button">Done</button>
+          <button data-filter="notes" type="button">Notes</button>
+        </div>
+
+        <div class="actions">
+          <button id="exportBtn" type="button">Export</button>
+          <label class="import-btn">
+            Import
+            <input id="importInput" type="file" accept="application/json">
+          </label>
+          <button id="resetBtn" class="danger" type="button">Reset</button>
+        </div>
+      </section>
+
+      <section id="videoList" class="video-list" aria-label="Security+ videos"></section>
+    </main>
+
+    <template id="videoTemplate">
+      <article class="video-card">
+        <div class="video-top">
+          <label class="check-row">
+            <input class="complete-checkbox" type="checkbox">
+            <span class="custom-check" aria-hidden="true"></span>
+            <span class="video-main">
+              <span class="video-meta"></span>
+              <span class="video-title"></span>
+            </span>
+          </label>
+          <a class="watch-link" target="_blank" rel="noreferrer">Watch</a>
+        </div>
+        <label class="notes-label">
+          <span>Notes</span>
+          <textarea class="notes-input" rows="3" placeholder="Add reminders, weak spots, examples, or questions for review"></textarea>
+        </label>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

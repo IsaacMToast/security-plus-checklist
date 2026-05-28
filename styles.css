@@ -1,0 +1,360 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f8f4;
+  --ink: #19201d;
+  --muted: #65716b;
+  --line: #dbe1d6;
+  --panel: #ffffff;
+  --accent: #167c74;
+  --accent-dark: #0d5f59;
+  --accent-soft: #dff2ee;
+  --gold: #d89f2b;
+  --danger: #a33a32;
+  --shadow: 0 18px 45px rgba(21, 32, 27, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 32px clamp(18px, 5vw, 64px) 22px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcf8;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent-dark);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  line-height: 1;
+}
+
+.playlist-link,
+button,
+.import-btn {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.playlist-link {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 800;
+}
+
+main {
+  width: min(1180px, calc(100% - 32px));
+  margin: 24px auto 48px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 22px;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.progress-ring {
+  --value: 0deg;
+  width: 116px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--value), #e9ede4 0deg);
+}
+
+.progress-ring span {
+  width: 82px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--accent-dark);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.summary-copy h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+}
+
+.summary-copy p {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.bar {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9ede4;
+}
+
+.bar span {
+  display: block;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  transition: width 180ms ease;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) auto auto;
+  align-items: end;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.search {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.search input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 14px;
+  color: var(--ink);
+  background: #fff;
+}
+
+.segmented,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.segmented button.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.import-btn input {
+  display: none;
+}
+
+.video-list {
+  display: grid;
+  gap: 12px;
+}
+
+.video-card {
+  padding: 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.video-card.done {
+  background: #f3f8f6;
+  border-color: #badbd4;
+}
+
+.video-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.check-row {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.complete-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.custom-check {
+  width: 24px;
+  aspect-ratio: 1;
+  margin-top: 3px;
+  border: 2px solid #a9b6ae;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+}
+
+.complete-checkbox:checked + .custom-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.complete-checkbox:checked + .custom-check::after {
+  content: "";
+  width: 11px;
+  height: 6px;
+  border-left: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.video-main {
+  min-width: 0;
+}
+
+.video-meta {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.video-title {
+  display: block;
+  font-size: 1.08rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.watch-link {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 10px;
+  color: var(--accent-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.notes-label {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.notes-input {
+  width: 100%;
+  min-height: 76px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fbfcf8;
+  line-height: 1.4;
+}
+
+.empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+
+@media (max-width: 850px) {
+  .app-header,
+  .video-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .segmented,
+  .actions {
+    width: 100%;
+  }
+
+  .segmented button,
+  .actions button,
+  .import-btn {
+    flex: 1 1 92px;
+  }
+}
+
+@media (max-width: 560px) {
+  main {
+    width: min(100% - 20px, 1180px);
+    margin-top: 14px;
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .progress-ring {
+    width: 96px;
+  }
+
+  .progress-ring span {
+    width: 68px;
+  }
+}
