@@ -2,14 +2,14 @@
 
 A local, browser-based checklist for Professor Messer's CompTIA Security+ SY0-701 course.
 
-Open `index.html` in your browser. Your completed videos and notes are saved in that browser's local storage.
+Open `index.html` in your browser. Your completed videos are saved in that browser's local storage.
 
 Features:
 
 - 121 video items from Professor Messer's SY0-701 course index
 - Checkboxes for completed videos
-- Notes under every video
 - Search and completion filters
+- Daily goal setting with highlighted videos for today
 - Progress summary
 - JSON export/import for backups or moving browsers
 

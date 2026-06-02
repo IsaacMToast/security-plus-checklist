@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Security+ Study Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -22,7 +25,7 @@
         </div>
         <div class="summary-copy">
           <h2 id="progressTitle">0 of 121 complete</h2>
-          <p id="progressDetail">Check off videos as you finish them. Notes save automatically in this browser.</p>
+          <p id="progressDetail">Check off videos as you finish them. Progress saves automatically in this browser.</p>
           <div class="bar" aria-hidden="true"><span id="progressBar"></span></div>
         </div>
       </section>
@@ -34,10 +37,10 @@
         </label>
 
         <div class="segmented" role="group" aria-label="Filter videos">
-          <button class="active" data-filter="all" type="button">All</button>
-          <button data-filter="todo" type="button">To do</button>
+          <button class="active" data-filter="todo" type="button">To do</button>
           <button data-filter="done" type="button">Done</button>
-          <button data-filter="notes" type="button">Notes</button>
+          <button data-filter="all" type="button">All</button>
+          <button data-filter="settings" type="button">Settings</button>
         </div>
 
         <div class="actions">
@@ -64,13 +67,24 @@
               <span class="video-title"></span>
             </span>
           </label>
+          <span class="goal-badge">Today</span>
           <a class="watch-link" target="_blank" rel="noreferrer">Watch</a>
         </div>
-        <label class="notes-label">
-          <span>Notes</span>
-          <textarea class="notes-input" rows="3" placeholder="Add reminders, weak spots, examples, or questions for review"></textarea>
-        </label>
       </article>
+    </template>
+
+    <template id="settingsTemplate">
+      <section class="settings-panel" aria-label="Settings">
+        <div>
+          <h2>Daily goal</h2>
+          <p>Choose how many unfinished videos should be marked for today.</p>
+        </div>
+        <label class="goal-control">
+          <span>Videos per day</span>
+          <input id="dailyGoalInput" type="number" min="0" max="121" step="1">
+        </label>
+        <button id="refreshGoalBtn" type="button">Refresh today</button>
+      </section>
     </template>
 
     <script src="app.js"></script>

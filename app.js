@@ -1,6 +1,7 @@
 const playlistId = "PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv";
 const sourceUrl = "https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/sy0-701-comptia-security-plus-course/";
 const storageKey = "security-plus-study-progress-v1";
+const settingsKey = "security-plus-study-settings-v1";
 
 const videos = [
   { title: "How to Pass Your SY0-701 Security+ Exam", duration: "10:06", section: "0.1 - Introduction" },
@@ -132,10 +133,12 @@ const videos = [
 }));
 
 let state = loadState();
-let activeFilter = "all";
+let settings = loadSettings();
+let activeFilter = "todo";
 
 const list = document.querySelector("#videoList");
 const template = document.querySelector("#videoTemplate");
+const settingsTemplate = document.querySelector("#settingsTemplate");
 const searchInput = document.querySelector("#searchInput");
 const filterButtons = document.querySelectorAll("[data-filter]");
 const progressPercent = document.querySelector("#progressPercent");
@@ -163,13 +166,15 @@ exportBtn.addEventListener("click", () => {
   const payload = {
     exportedAt: new Date().toISOString(),
     sourceUrl,
+    settings: {
+      dailyGoal: settings.dailyGoal
+    },
     videos: videos.map((video) => ({
       index: video.index,
       title: video.title,
       section: video.section,
       duration: video.duration,
-      complete: Boolean(state[video.id]?.complete),
-      notes: state[video.id]?.notes || ""
+      complete: Boolean(state[video.id]?.complete)
     }))
   };
 
@@ -193,10 +198,15 @@ importInput.addEventListener("change", async () => {
       const match = videos.find((video) => video.index === item.index || video.title === item.title);
       if (!match) return;
       state[match.id] = {
-        complete: Boolean(item.complete),
-        notes: typeof item.notes === "string" ? item.notes : ""
+        complete: Boolean(item.complete)
       };
     });
+
+    if (incoming.settings && Number.isFinite(Number(incoming.settings.dailyGoal))) {
+      settings.dailyGoal = clampGoal(incoming.settings.dailyGoal);
+      refreshTodayGoal();
+      saveSettings();
+    }
 
     saveState();
     render();
@@ -208,7 +218,7 @@ importInput.addEventListener("change", async () => {
 });
 
 resetBtn.addEventListener("click", () => {
-  const ok = confirm("Reset all completed items and notes?");
+  const ok = confirm("Reset all completed items?");
   if (!ok) return;
   state = {};
   saveState();
@@ -216,6 +226,14 @@ resetBtn.addEventListener("click", () => {
 });
 
 function render() {
+  ensureTodayGoal();
+
+  if (activeFilter === "settings") {
+    renderSettings();
+    updateProgress();
+    return;
+  }
+
   const query = searchInput.value.trim().toLowerCase();
   const filtered = videos.filter((video) => {
     const entry = state[video.id] || {};
@@ -224,8 +242,7 @@ function render() {
     const matchesFilter =
       activeFilter === "all" ||
       (activeFilter === "todo" && !entry.complete) ||
-      (activeFilter === "done" && entry.complete) ||
-      (activeFilter === "notes" && (entry.notes || "").trim());
+      (activeFilter === "done" && entry.complete);
 
     return matchesQuery && matchesFilter;
   });
@@ -246,19 +263,21 @@ function render() {
 
 function createVideoCard(video) {
   const entry = state[video.id] || {};
+  const isTodayGoal = settings.todayGoalIds.includes(video.id);
   const node = template.content.firstElementChild.cloneNode(true);
   const checkbox = node.querySelector(".complete-checkbox");
   const meta = node.querySelector(".video-meta");
   const title = node.querySelector(".video-title");
   const watch = node.querySelector(".watch-link");
-  const notes = node.querySelector(".notes-input");
+  const goalBadge = node.querySelector(".goal-badge");
 
   node.classList.toggle("done", Boolean(entry.complete));
+  node.classList.toggle("today-goal", isTodayGoal);
   checkbox.checked = Boolean(entry.complete);
   meta.textContent = `${video.index}. ${video.section} | ${video.duration}`;
   title.textContent = video.title;
   watch.href = video.url;
-  notes.value = entry.notes || "";
+  goalBadge.hidden = !isTodayGoal;
 
   checkbox.addEventListener("change", () => {
     updateEntry(video.id, { complete: checkbox.checked });
@@ -267,30 +286,64 @@ function createVideoCard(video) {
     if (activeFilter !== "all") render();
   });
 
-  notes.addEventListener("input", () => {
-    updateEntry(video.id, { notes: notes.value });
-    if (activeFilter === "notes" && !notes.value.trim()) render();
-  });
-
   return node;
 }
 
 function updateEntry(id, changes) {
-  state[id] = { complete: false, notes: "", ...(state[id] || {}), ...changes };
-  if (!state[id].complete && !state[id].notes.trim()) delete state[id];
+  state[id] = { complete: false, ...(state[id] || {}), ...changes };
+  if (!state[id].complete) delete state[id];
   saveState();
 }
 
 function updateProgress() {
   const done = videos.filter((video) => state[video.id]?.complete).length;
-  const noted = videos.filter((video) => (state[video.id]?.notes || "").trim()).length;
+  const goalDone = settings.todayGoalIds.filter((id) => state[id]?.complete).length;
+  const goalTotal = settings.todayGoalIds.length;
   const percent = Math.round((done / videos.length) * 100);
 
   progressPercent.textContent = `${percent}%`;
   progressTitle.textContent = `${done} of ${videos.length} complete`;
-  progressDetail.textContent = `${videos.length - done} remaining. ${noted} ${noted === 1 ? "video has" : "videos have"} notes.`;
+  progressDetail.textContent = goalTotal
+    ? `${videos.length - done} remaining. Today's goal: ${goalDone} of ${goalTotal}.`
+    : `${videos.length - done} remaining. Set a daily goal in Settings.`;
   progressBar.style.width = `${percent}%`;
   progressRing.style.setProperty("--value", `${percent * 3.6}deg`);
+}
+
+function renderSettings() {
+  const node = settingsTemplate.content.firstElementChild.cloneNode(true);
+  const input = node.querySelector("#dailyGoalInput");
+  const refreshButton = node.querySelector("#refreshGoalBtn");
+
+  input.value = settings.dailyGoal;
+  input.addEventListener("input", () => {
+    settings.dailyGoal = clampGoal(input.value);
+    refreshTodayGoal();
+    saveSettings();
+    updateProgress();
+  });
+
+  refreshButton.addEventListener("click", () => {
+    refreshTodayGoal();
+    saveSettings();
+    updateProgress();
+  });
+
+  list.replaceChildren(node);
+}
+
+function ensureTodayGoal() {
+  const today = getTodayKey();
+  if (settings.goalDate !== today) refreshTodayGoal();
+}
+
+function refreshTodayGoal() {
+  settings.goalDate = getTodayKey();
+  settings.todayGoalIds = videos
+    .filter((video) => !state[video.id]?.complete)
+    .slice(0, settings.dailyGoal)
+    .map((video) => video.id);
+  saveSettings();
 }
 
 function loadState() {
@@ -303,4 +356,35 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(settingsKey)) || {};
+    return {
+      dailyGoal: clampGoal(saved.dailyGoal ?? 3),
+      goalDate: typeof saved.goalDate === "string" ? saved.goalDate : "",
+      todayGoalIds: Array.isArray(saved.todayGoalIds) ? saved.todayGoalIds : []
+    };
+  } catch {
+    return { dailyGoal: 3, goalDate: "", todayGoalIds: [] };
+  }
+}
+
+function saveSettings() {
+  localStorage.setItem(settingsKey, JSON.stringify(settings));
+}
+
+function clampGoal(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.min(videos.length, Math.max(0, parsed));
+}
+
+function getTodayKey() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
