@@ -27,6 +27,12 @@
           <h2 id="progressTitle">0 of 121 complete</h2>
           <p id="progressDetail">Check off videos as you finish them. Progress saves automatically in this browser.</p>
           <div class="bar" aria-hidden="true"><span id="progressBar"></span></div>
+          <div class="reward-stats" aria-label="Reward progress">
+            <span><strong id="streakValue">0</strong> day streak</span>
+            <span><strong id="levelValue">1</strong> level</span>
+            <span><strong id="xpValue">0</strong> XP</span>
+          </div>
+          <div class="xp-track" aria-hidden="true"><span id="xpBar"></span></div>
         </div>
       </section>
 
@@ -53,6 +59,7 @@
         </div>
       </section>
 
+      <section id="badgeList" class="badge-list" aria-label="Earned badges"></section>
       <section id="videoList" class="video-list" aria-label="Security+ videos"></section>
     </main>
 
@@ -68,8 +75,9 @@
             </span>
           </label>
           <span class="goal-badge">Today</span>
-          <a class="watch-link" target="_blank" rel="noreferrer">Watch</a>
+          <button class="embed-toggle" type="button" aria-expanded="false" title="Expand video in this page">Play here</button>
         </div>
+        <div class="embed-panel" hidden></div>
       </article>
     </template>
 
@@ -83,9 +91,19 @@
           <span>Videos per day</span>
           <input id="dailyGoalInput" type="number" min="0" max="121" step="1">
         </label>
+        <label class="toggle-control">
+          <input id="soundToggle" type="checkbox">
+          <span>Sound effects</span>
+        </label>
+        <label class="toggle-control">
+          <input id="animationToggle" type="checkbox">
+          <span>Animations</span>
+        </label>
         <button id="refreshGoalBtn" type="button">Refresh today</button>
       </section>
     </template>
+
+    <div id="toastLayer" class="toast-layer" aria-live="polite" aria-atomic="true"></div>
 
     <script src="app.js"></script>
   </body>

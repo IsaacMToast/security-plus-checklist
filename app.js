@@ -2,6 +2,37 @@ const playlistId = "PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv";
 const sourceUrl = "https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/sy0-701-comptia-security-plus-course/";
 const storageKey = "security-plus-study-progress-v1";
 const settingsKey = "security-plus-study-settings-v1";
+const rewardsKey = "security-plus-study-rewards-v1";
+const xpPerVideo = 10;
+const xpPerLevel = 100;
+
+const youtubeIds = [
+  "KiEptGbnEBc", "STM3EUvL7wg", "SBcDGb9l6yo", "XxnCxPEllMg", "AhaZtj5P2a8",
+  "cuTVyyS5C7M", "zC_Pndpg8-c", "YtT8q2mUM9c", "X_qfMVty4ts", "48wRbMdHFVI",
+  "H9TYNjcpl-0", "xHAMEF7-inQ", "jpsc4c7lntw", "U6BWn81P5Ec", "u61J0xR_XPU",
+  "LfuTMzZke4g", "EcGmQjl6XEo", "-wqU_2ToP1M", "cLa94BZH_9s", "6xUH0t6ugIM",
+  "4lAbGpTDZ18", "9SD6DRCKZFU", "X3yoNAVuKwA", "z413PV6l_Ys", "akoDmeV3LQo",
+  "kBcTczu8FsM", "0-qeeI5jTqU", "MKptc1lPSw8", "KbtUrdBy9Yo", "narir8qpGq8",
+  "qFUOLkEk8AQ", "PKgw0CLZIhE", "TaTaEvqjjDM", "t2JrPrzRDLA", "V2DCYO-sWRQ",
+  "WqvCJLpwExY", "NBKzlUqzVmE", "DRfAwwdzYpU", "FDFxGLnZtoY", "-eZs8wjjGGE",
+  "Su8ANmAoerU", "-VmI3xFJw78", "nu27ovJ5rqw", "oIpOuTX2HRs", "Z7OntvK--PQ",
+  "BoxeL5ybOXI", "tSLqrKhUvts", "M_Af6_8JTuo", "ai6qS13gKRo", "xDhUBQ_lnUA",
+  "yRSqIGjeb7s", "7aJaEQy6Yoc", "-ZfbifHwEVE", "x72hG9GvkaQ", "yDeDGCh_PDs",
+  "Fc8ZJfmapbI", "wXoC46Qr_9Q", "8qpQ8Q6xxiU", "jd001Hj7XWM", "HDiNPPrGhzE",
+  "Ap3Z_0ZdqpQ", "l64La1xYXL4", "7QuYupuic3Q", "WlOslEy3ztg", "QhLQ6J4satw",
+  "mq1HRM-zGtQ", "uU3e_ntg-3g", "R0W0_gZCVzk", "71RQaYQ4QSw", "leX_Qa7wqB4",
+  "sb0dRaQbuBA", "WGlT6-gNwqY", "IhT7Odu4xHc", "8mGSwRScqIM", "-EY45MimSBM",
+  "BWPJD9Eb9iE", "YQKbs0ug0XQ", "iAR6SgvtezY", "KaqKoKNEKnE", "fFvXy3WkLpA",
+  "BJ2UMB4a04g", "9B0mtWk_AM0", "86fruE9jkKk", "-LevHAzXgFs", "eyVy1gKCuAU",
+  "P9xakfmX70c", "np2WI_rM-Ok", "nNiNTviiacU", "VgNyh4HEqSU", "I_c0D49uCwQ",
+  "4dpTyRM6BU8", "9NAKCyOtFH0", "v6ht9efsnRI", "ZDJ-BLPLWq4", "83pCkSSj1IQ",
+  "ZoOyyqhptik", "9ANHcZwJfdQ", "MpIzA4fNWew", "eMOe-PLBy1k", "R9ojg881dLs",
+  "X2UiMLxRdhE", "CYFe16lCRMk", "UtDWApdO8Zk", "EDru1LTYDJw", "5kY9kvzeWjA",
+  "jBvdRpXaomk", "vJINnOZyQNg", "4tGFraaP48Q", "gxNi-04yP8Q", "cLhUMoQS1a8",
+  "Ykx7t54y-oo", "pmyuWY7Pbag", "myI-v3mj7Kc", "13KNjPexnEI", "HSZxjj1YAh8",
+  "IjJf4jLtONQ", "WGXrbAh0LUI", "uo2Yw720mv4", "wEMzVfwBiWY", "W_Npxwk4fbI",
+  "WQRZMMLUkGE"
+];
 
 const videos = [
   { title: "How to Pass Your SY0-701 Security+ Exam", duration: "10:06", section: "0.1 - Introduction" },
@@ -129,11 +160,13 @@ const videos = [
   ...video,
   id: `video-${String(index + 1).padStart(3, "0")}`,
   index: index + 1,
-  url: `https://www.youtube.com/playlist?list=${playlistId}&index=${index + 1}`
+  youtubeId: youtubeIds[index],
+  url: `https://www.youtube.com/watch?v=${youtubeIds[index]}&list=${playlistId}`
 }));
 
 let state = loadState();
 let settings = loadSettings();
+let rewards = loadRewards();
 let activeFilter = "todo";
 
 const list = document.querySelector("#videoList");
@@ -149,6 +182,14 @@ const exportBtn = document.querySelector("#exportBtn");
 const importInput = document.querySelector("#importInput");
 const resetBtn = document.querySelector("#resetBtn");
 const progressRing = document.querySelector(".progress-ring");
+const streakValue = document.querySelector("#streakValue");
+const levelValue = document.querySelector("#levelValue");
+const xpValue = document.querySelector("#xpValue");
+const xpBar = document.querySelector("#xpBar");
+const badgeList = document.querySelector("#badgeList");
+const toastLayer = document.querySelector("#toastLayer");
+let audioContext;
+document.documentElement.classList.toggle("effects-off", !settings.animationsEnabled);
 
 render();
 
@@ -167,14 +208,21 @@ exportBtn.addEventListener("click", () => {
     exportedAt: new Date().toISOString(),
     sourceUrl,
     settings: {
-      dailyGoal: settings.dailyGoal
+      dailyGoal: settings.dailyGoal,
+      soundEnabled: settings.soundEnabled,
+      animationsEnabled: settings.animationsEnabled
+    },
+    rewards: {
+      completedDates: rewards.completedDates,
+      seenBadgeIds: rewards.seenBadgeIds
     },
     videos: videos.map((video) => ({
       index: video.index,
       title: video.title,
       section: video.section,
       duration: video.duration,
-      complete: Boolean(state[video.id]?.complete)
+      complete: Boolean(state[video.id]?.complete),
+      completedAt: state[video.id]?.completedAt || ""
     }))
   };
 
@@ -198,14 +246,30 @@ importInput.addEventListener("change", async () => {
       const match = videos.find((video) => video.index === item.index || video.title === item.title);
       if (!match) return;
       state[match.id] = {
-        complete: Boolean(item.complete)
+        complete: Boolean(item.complete),
+        completedAt: typeof item.completedAt === "string" ? item.completedAt : ""
       };
+      if (!state[match.id].complete) delete state[match.id];
     });
 
-    if (incoming.settings && Number.isFinite(Number(incoming.settings.dailyGoal))) {
-      settings.dailyGoal = clampGoal(incoming.settings.dailyGoal);
+    if (incoming.settings) {
+      if (Number.isFinite(Number(incoming.settings.dailyGoal))) {
+        settings.dailyGoal = clampGoal(incoming.settings.dailyGoal);
+      }
+      if (typeof incoming.settings.soundEnabled === "boolean") {
+        settings.soundEnabled = incoming.settings.soundEnabled;
+      }
+      if (typeof incoming.settings.animationsEnabled === "boolean") {
+        settings.animationsEnabled = incoming.settings.animationsEnabled;
+      }
       refreshTodayGoal();
       saveSettings();
+    }
+
+    if (incoming.rewards) {
+      rewards.completedDates = Array.isArray(incoming.rewards.completedDates) ? incoming.rewards.completedDates : rewards.completedDates;
+      rewards.seenBadgeIds = Array.isArray(incoming.rewards.seenBadgeIds) ? incoming.rewards.seenBadgeIds : rewards.seenBadgeIds;
+      saveRewards();
     }
 
     saveState();
@@ -231,6 +295,7 @@ function render() {
   if (activeFilter === "settings") {
     renderSettings();
     updateProgress();
+    renderBadges(false);
     return;
   }
 
@@ -245,6 +310,9 @@ function render() {
       (activeFilter === "done" && entry.complete);
 
     return matchesQuery && matchesFilter;
+  }).sort((a, b) => {
+    if (activeFilter !== "done") return 0;
+    return getCompletedTime(b) - getCompletedTime(a);
   });
 
   list.replaceChildren();
@@ -259,6 +327,7 @@ function render() {
   }
 
   updateProgress();
+  renderBadges(false);
 }
 
 function createVideoCard(video) {
@@ -268,22 +337,57 @@ function createVideoCard(video) {
   const checkbox = node.querySelector(".complete-checkbox");
   const meta = node.querySelector(".video-meta");
   const title = node.querySelector(".video-title");
-  const watch = node.querySelector(".watch-link");
   const goalBadge = node.querySelector(".goal-badge");
+  const embedToggle = node.querySelector(".embed-toggle");
+  const embedPanel = node.querySelector(".embed-panel");
 
   node.classList.toggle("done", Boolean(entry.complete));
   node.classList.toggle("today-goal", isTodayGoal);
   checkbox.checked = Boolean(entry.complete);
   meta.textContent = `${video.index}. ${video.section} | ${video.duration}`;
   title.textContent = video.title;
-  watch.href = video.url;
   goalBadge.hidden = !isTodayGoal;
 
+  embedToggle.addEventListener("click", () => {
+    const isOpen = !embedPanel.hidden;
+    embedPanel.hidden = isOpen;
+    embedToggle.setAttribute("aria-expanded", String(!isOpen));
+    embedToggle.textContent = isOpen ? "Play here" : "Hide";
+
+    if (!isOpen && !embedPanel.firstElementChild) {
+      const iframe = document.createElement("iframe");
+      iframe.title = `${video.title} - Professor Messer Security+`;
+      iframe.src = `https://www.youtube.com/embed/${video.youtubeId}?list=${playlistId}&rel=0`;
+      iframe.loading = "lazy";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      embedPanel.append(iframe);
+    }
+  });
+
   checkbox.addEventListener("change", () => {
+    const wasDailyGoalComplete = isDailyGoalComplete();
     updateEntry(video.id, { complete: checkbox.checked });
     node.classList.toggle("done", checkbox.checked);
+    if (checkbox.checked) {
+      recordCompletionDate();
+      playSound("complete");
+      celebrateCard(node);
+      showBurst(node, false);
+    } else {
+      playSound("undo");
+    }
     updateProgress();
-    if (activeFilter !== "all") render();
+    const nowDailyGoalComplete = isDailyGoalComplete();
+    if (checkbox.checked && !wasDailyGoalComplete && nowDailyGoalComplete) {
+      playSound("goal");
+      showBurst(node, true);
+      showToast("Daily goal complete", "That is today's target handled.");
+    }
+    renderBadges(true);
+    if (activeFilter !== "all") {
+      window.setTimeout(render, checkbox.checked && shouldAnimate() ? 520 : 0);
+    }
   });
 
   return node;
@@ -291,8 +395,21 @@ function createVideoCard(video) {
 
 function updateEntry(id, changes) {
   state[id] = { complete: false, ...(state[id] || {}), ...changes };
+  if (changes.complete === true) {
+    state[id].completedAt = new Date().toISOString();
+  }
+  if (changes.complete === false) {
+    delete state[id].completedAt;
+  }
   if (!state[id].complete) delete state[id];
   saveState();
+}
+
+function getCompletedTime(video) {
+  const entry = state[video.id] || {};
+  const timestamp = Date.parse(entry.completedAt || "");
+  if (Number.isFinite(timestamp)) return timestamp;
+  return -video.index;
 }
 
 function updateProgress() {
@@ -308,14 +425,194 @@ function updateProgress() {
     : `${videos.length - done} remaining. Set a daily goal in Settings.`;
   progressBar.style.width = `${percent}%`;
   progressRing.style.setProperty("--value", `${percent * 3.6}deg`);
+  updateRewardStats(done);
+}
+
+function updateRewardStats(done) {
+  const xp = done * xpPerVideo;
+  const level = Math.floor(xp / xpPerLevel) + 1;
+  const levelProgress = xp % xpPerLevel;
+
+  streakValue.textContent = calculateStreak();
+  levelValue.textContent = level;
+  xpValue.textContent = xp;
+  xpBar.style.width = `${Math.round((levelProgress / xpPerLevel) * 100)}%`;
+}
+
+function renderBadges(showNewToasts) {
+  const earnedBadges = getEarnedBadges();
+  const seen = new Set(rewards.seenBadgeIds);
+  const newBadges = earnedBadges.filter((badge) => !seen.has(badge.id));
+
+  badgeList.replaceChildren();
+  earnedBadges.slice(-6).forEach((badge) => {
+    const item = document.createElement("span");
+    item.className = "badge-chip";
+    item.textContent = badge.label;
+    badgeList.append(item);
+  });
+
+  if (showNewToasts) {
+    newBadges.forEach((badge) => showToast(badge.label, badge.detail));
+  }
+
+  if (newBadges.length) {
+    rewards.seenBadgeIds = [...new Set([...rewards.seenBadgeIds, ...newBadges.map((badge) => badge.id)])];
+    saveRewards();
+  }
+}
+
+function getEarnedBadges() {
+  const completed = videos.filter((video) => state[video.id]?.complete);
+  const done = completed.length;
+  const streak = calculateStreak();
+  const level = Math.floor((done * xpPerVideo) / xpPerLevel) + 1;
+  const badges = [];
+
+  if (done >= 1) badges.push({ id: "first-video", label: "First win", detail: "You finished your first video." });
+  if (done >= 10) badges.push({ id: "ten-videos", label: "10 down", detail: "Ten Security+ videos complete." });
+  if (done >= 25) badges.push({ id: "quarter-course", label: "Quarter course", detail: "A serious chunk is behind you." });
+  if (isDailyGoalComplete()) badges.push({ id: `daily-goal-${settings.goalDate}`, label: "Daily goal", detail: "Today's target is complete." });
+  if (streak >= 3) badges.push({ id: "streak-3", label: "3-day streak", detail: "Three days of momentum." });
+  if (streak >= 7) badges.push({ id: "streak-7", label: "7-day streak", detail: "A full week of consistency." });
+  if (level >= 5) badges.push({ id: "level-5", label: "Level 5", detail: "You reached level 5." });
+  if (done === videos.length) badges.push({ id: "course-complete", label: "Course complete", detail: "All Security+ videos are complete." });
+
+  getCompletedSections().forEach((section) => {
+    badges.push({
+      id: `section-${section}`,
+      label: `Section ${section}`,
+      detail: `Section ${section} is complete.`
+    });
+  });
+
+  return badges;
+}
+
+function getCompletedSections() {
+  const sectionIds = [...new Set(videos.map((video) => video.section.split(".")[0]))];
+  return sectionIds.filter((sectionId) => {
+    const sectionVideos = videos.filter((video) => video.section.startsWith(`${sectionId}.`));
+    return sectionVideos.length && sectionVideos.every((video) => state[video.id]?.complete);
+  });
+}
+
+function recordCompletionDate() {
+  const today = getTodayKey();
+  if (!rewards.completedDates.includes(today)) {
+    rewards.completedDates.push(today);
+    rewards.completedDates.sort();
+    saveRewards();
+  }
+}
+
+function calculateStreak() {
+  const dates = new Set(rewards.completedDates);
+  let cursor = new Date();
+  let streak = 0;
+
+  while (dates.has(formatDateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function isDailyGoalComplete() {
+  return settings.todayGoalIds.length > 0 && settings.todayGoalIds.every((id) => state[id]?.complete);
+}
+
+function showToast(title, detail) {
+  const toast = document.createElement("div");
+  toast.className = "reward-toast";
+  toast.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
+  toastLayer.append(toast);
+  window.setTimeout(() => toast.remove(), 4200);
+}
+
+function celebrateCard(node) {
+  if (!shouldAnimate()) return;
+  node.classList.remove("just-completed");
+  void node.offsetWidth;
+  node.classList.add("just-completed");
+  progressRing.classList.remove("pulse");
+  void progressRing.offsetWidth;
+  progressRing.classList.add("pulse");
+}
+
+function showBurst(anchor, big) {
+  if (!shouldAnimate()) return;
+  const rect = anchor.getBoundingClientRect();
+  const burst = document.createElement("div");
+  burst.className = `burst ${big ? "big" : ""}`;
+  burst.style.left = `${rect.right - 70}px`;
+  burst.style.top = `${rect.top + rect.height / 2}px`;
+
+  for (let index = 0; index < (big ? 14 : 8); index += 1) {
+    const spark = document.createElement("span");
+    spark.style.setProperty("--angle", `${(360 / (big ? 14 : 8)) * index}deg`);
+    spark.style.setProperty("--distance", `${big ? 48 : 30}px`);
+    burst.append(spark);
+  }
+
+  document.body.append(burst);
+  window.setTimeout(() => burst.remove(), 850);
+}
+
+function playSound(type) {
+  if (!settings.soundEnabled) return;
+  const context = getAudioContext();
+  if (!context) return;
+
+  const notes = {
+    complete: [523.25, 659.25, 783.99],
+    undo: [392, 329.63],
+    goal: [523.25, 659.25, 783.99, 1046.5]
+  }[type];
+
+  notes.forEach((frequency, index) => {
+    const start = context.currentTime + index * 0.055;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(type === "goal" ? 0.08 : 0.05, start + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.24);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(start);
+    oscillator.stop(start + 0.26);
+  });
+}
+
+function getAudioContext() {
+  try {
+    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+    return audioContext;
+  } catch {
+    return null;
+  }
+}
+
+function shouldAnimate() {
+  return settings.animationsEnabled && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function renderSettings() {
   const node = settingsTemplate.content.firstElementChild.cloneNode(true);
   const input = node.querySelector("#dailyGoalInput");
   const refreshButton = node.querySelector("#refreshGoalBtn");
+  const soundToggle = node.querySelector("#soundToggle");
+  const animationToggle = node.querySelector("#animationToggle");
 
   input.value = settings.dailyGoal;
+  soundToggle.checked = settings.soundEnabled;
+  animationToggle.checked = settings.animationsEnabled;
+
   input.addEventListener("input", () => {
     settings.dailyGoal = clampGoal(input.value);
     refreshTodayGoal();
@@ -327,6 +624,18 @@ function renderSettings() {
     refreshTodayGoal();
     saveSettings();
     updateProgress();
+  });
+
+  soundToggle.addEventListener("change", () => {
+    settings.soundEnabled = soundToggle.checked;
+    saveSettings();
+    if (settings.soundEnabled) playSound("complete");
+  });
+
+  animationToggle.addEventListener("change", () => {
+    settings.animationsEnabled = animationToggle.checked;
+    saveSettings();
+    document.documentElement.classList.toggle("effects-off", !settings.animationsEnabled);
   });
 
   list.replaceChildren(node);
@@ -364,10 +673,12 @@ function loadSettings() {
     return {
       dailyGoal: clampGoal(saved.dailyGoal ?? 3),
       goalDate: typeof saved.goalDate === "string" ? saved.goalDate : "",
-      todayGoalIds: Array.isArray(saved.todayGoalIds) ? saved.todayGoalIds : []
+      todayGoalIds: Array.isArray(saved.todayGoalIds) ? saved.todayGoalIds : [],
+      soundEnabled: saved.soundEnabled !== false,
+      animationsEnabled: saved.animationsEnabled !== false
     };
   } catch {
-    return { dailyGoal: 3, goalDate: "", todayGoalIds: [] };
+    return { dailyGoal: 3, goalDate: "", todayGoalIds: [], soundEnabled: true, animationsEnabled: true };
   }
 }
 
@@ -382,9 +693,28 @@ function clampGoal(value) {
 }
 
 function getTodayKey() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
+  return formatDateKey(new Date());
+}
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function loadRewards() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(rewardsKey)) || {};
+    return {
+      completedDates: Array.isArray(saved.completedDates) ? saved.completedDates : [],
+      seenBadgeIds: Array.isArray(saved.seenBadgeIds) ? saved.seenBadgeIds : []
+    };
+  } catch {
+    return { completedDates: [], seenBadgeIds: [] };
+  }
+}
+
+function saveRewards() {
+  localStorage.setItem(rewardsKey, JSON.stringify(rewards));
 }
